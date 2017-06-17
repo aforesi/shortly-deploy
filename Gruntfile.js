@@ -2,7 +2,15 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+
     concat: {
+      options: {
+        separator: ';',
+      },
+      dist: {
+        src: ['public/client/*.js'],
+        dest: 'dist/built.js'
+      }
     },
 
     mochaTest: {
@@ -51,8 +59,9 @@ module.exports = function(grunt) {
 
     shell: {
       prodServer: {
+        command: 'git push live master'
       }
-    },
+    }
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -68,6 +77,10 @@ module.exports = function(grunt) {
     grunt.task.run([ 'nodemon', 'watch' ]);
   });
 
+  grunt.registerTask('sendtolivepls', function(target) {
+    grunt.task.run([ 'shell:prodServer' ]);
+  });
+
   ////////////////////////////////////////////////////
   // Main grunt tasks
   ////////////////////////////////////////////////////
@@ -77,11 +90,14 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('build', [
+    //concat
+    //uglify
+    //etc
   ]);
 
   grunt.registerTask('upload', function(n) {
     if (grunt.option('prod')) {
-      // add your production server task here
+      grunt.task.run([ 'sendtolivepls' ]);
     } else {
       grunt.task.run([ 'server-dev' ]);
     }
